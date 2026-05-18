@@ -467,8 +467,20 @@ function showChangelogNotificationOnUpdate(currentVersion: string) {
 }
 
 async function registerVscodeCommands() {
-    const commands = await import("./commands");
-    Object.values(commands).forEach(it => {
-        EXTENSION_CONTEXT.subscriptions.push(it.formInstance().register(entryPointHandler));
+    const commands = await import("./commands/index.js");
+    Object.values(commands).forEach(command => {
+        if (
+            typeof command === "object" &&
+            command !== null &&
+            "formInstance" in command &&
+            typeof (command as { formInstance?: unknown }).formInstance === "function"
+        ) {
+            const typedCommand = command as {
+                formInstance: () => { register: (handler: typeof entryPointHandler) => vscode.Disposable };
+            };
+            EXTENSION_CONTEXT.subscriptions.push(
+                typedCommand.formInstance().register(entryPointHandler),
+            );
+        }
     });
 }

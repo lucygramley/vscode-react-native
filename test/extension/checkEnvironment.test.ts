@@ -98,7 +98,7 @@ suite("checkEnvironment", function () {
 
     suite("envTest", async function () {
         const envTest = await import(
-            "../../src/extension/services/validationService/checks/env"
+            "../../src/extension/services/validationService/checks/env.js"
         ).then(it => it.androidHome.exec);
 
         const envVars = {
